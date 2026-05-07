@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="cs">
+<head>
+<meta charset="utf-8">
+<title>MEDEVID · SmartIT — Informační systém pro IVF kliniky</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="MEDEVID je kompletní informační systém pro kliniky asistované reprodukce. Karty pacientek, IVF cykly, laboratoř, eRecept, NRAR. Vyvíjí SmartIT s.r.o. v Plzni od roku 2011.">
+<meta name="theme-color" content="#F5F3EE">
+<meta name="author" content="SmartIT s.r.o.">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:title" content="MEDEVID · Informační systém pro IVF kliniky">
+<meta property="og:description" content="Kompletní informační systém pro kliniky asistované reprodukce. Software, integrace a customizace na míru. Vývoj v Plzni od roku 2011.">
+<meta property="og:locale" content="cs_CZ">
+<meta property="og:site_name" content="MEDEVID">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MEDEVID · Informační systém pro IVF kliniky">
+<meta name="twitter:description" content="Kompletní informační systém pro kliniky asistované reprodukce. Vývoj v Plzni od roku 2011.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3CradialGradient id='g' cx='30%25' cy='30%25' r='80%25'%3E%3Cstop offset='0%25' stop-color='%23ffffff'/%3E%3Cstop offset='40%25' stop-color='%23D6E4FF'/%3E%3Cstop offset='100%25' stop-color='%23A8C0FF'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='16' cy='16' r='15' fill='url(%23g)' stroke='%23A8C0FF' stroke-width='1'/%3E%3Ctext x='16' y='22' text-anchor='middle' font-family='Inter,system-ui,sans-serif' font-weight='700' font-size='17' fill='%230F0F12'%3EM%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  *,*::before,*::after{box-sizing:border-box}
+  :root{
+    --bg:#F5F3EE;          /* warm off-white */
+    --bg-2:#EFEDE7;
+    --paper:#FFFFFF;
+    --ink:#0F0F12;
+    --ink-2:#26262C;
+    --mute:#6B6B72;
+    --low:#9C9CA3;
+    --line:rgba(15,15,18,0.08);
+    --line-2:rgba(15,15,18,0.14);
+    --glass:rgba(255,255,255,0.55);
+    --glass-strong:rgba(255,255,255,0.75);
+    --tint-1:#D6E4FF;       /* soft blue */
+    --tint-2:#FFE3D6;       /* peach */
+    --tint-3:#E2F5D9;       /* mint */
+    --tint-4:#F0DCFF;       /* lilac */
+    --accent:#0F0F12;       /* ink as primary cta */
+    --shadow-sm: 0 1px 2px rgba(15,15,18,0.04), 0 4px 12px rgba(15,15,18,0.05);
+    --shadow-md: 0 1px 3px rgba(15,15,18,0.06), 0 12px 32px rgba(15,15,18,0.08);
+    --shadow-lg: 0 2px 6px rgba(15,15,18,0.05), 0 30px 60px -10px rgba(15,15,18,0.18);
+  }
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'Geist','Inter',system-ui,sans-serif;
+    font-size:16px;line-height:1.55;
+    -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  ::selection{background:var(--ink);color:var(--bg)}
+  a{color:inherit;text-decoration:none}
+  img{display:block;max-width:100%}
+  .mono{font-family:'Geist Mono',monospace;letter-spacing:-0.01em}
+  .serif{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+  .wrap{max-width:1280px;margin:0 auto;padding:0 28px}
+  @media (max-width:720px){.wrap{padding:0 18px}}
+
+  /* ─────── Soft pastel mesh background */
+  .mesh{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+  .blob{position:absolute;border-radius:50%;filter:blur(100px);opacity:0.55;will-change:transform}
+  .blob.b1{width:720px;height:720px;background:var(--tint-1);top:-220px;left:-180px;animation:float1 26s ease-in-out infinite}
+  .blob.b2{width:640px;height:640px;background:var(--tint-2);top:30%;right:-140px;animation:float2 30s ease-in-out infinite;opacity:0.45}
+  .blob.b3{width:560px;height:560px;background:var(--tint-3);bottom:5%;left:25%;animation:float3 34s ease-in-out infinite;opacity:0.50}
+  .blob.b4{width:480px;height:480px;background:var(--tint-4);top:55%;left:45%;animation:float1 28s ease-in-out infinite reverse;opacity:0.35}
+  @keyframes float1{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(140px,90px) scale(1.1)}}
+  @keyframes float2{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-100px,160px) scale(0.92)}}
+  @keyframes float3{0%,100%{transform:translate(0,0) scale(1)}50%{transform:translate(-180px,-80px) scale(1.18)}}
+
+  /* extra orbiting accents — gives the glass something to refract */
+  .orb{position:absolute;border-radius:50%;filter:blur(40px);will-change:transform;mix-blend-mode:multiply;opacity:0.55}
+  .orb.o1{width:280px;height:280px;background:radial-gradient(circle,#A8C0FF,transparent 70%);top:18%;left:8%;animation:orbit1 22s ease-in-out infinite}
+  .orb.o2{width:240px;height:240px;background:radial-gradient(circle,#FFB59E,transparent 70%);top:60%;right:14%;animation:orbit2 26s ease-in-out infinite}
+  .orb.o3{width:200px;height:200px;background:radial-gradient(circle,#B8E89E,transparent 70%);top:40%;left:46%;animation:orbit3 20s ease-in-out infinite}
+  @keyframes orbit1{0%,100%{transform:translate(0,0)}33%{transform:translate(80px,-40px)}66%{transform:translate(-40px,60px)}}
+  @keyframes orbit2{0%,100%{transform:translate(0,0)}33%{transform:translate(-90px,50px)}66%{transform:translate(60px,-40px)}}
+  @keyframes orbit3{0%,100%{transform:translate(0,0)}50%{transform:translate(-100px,80px)}}
+
+  /* layered organic structure: fine grain + medium speckle + soft fibres */
+  .grain{position:fixed;inset:0;z-index:1;pointer-events:none;mix-blend-mode:soft-light;opacity:0.55;
+    background-image:
+      url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220' viewBox='0 0 220 220'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='2.4' numOctaves='2' stitchTiles='stitch' seed='4'/%3E%3CfeColorMatrix values='0 0 0 0 0.06 0 0 0 0 0.06 0 0 0 0 0.09 0 0 0 0.9 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E"),
+      url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='420' height='420' viewBox='0 0 420 420'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch' seed='9'/%3E%3CfeColorMatrix values='0 0 0 0 0.08 0 0 0 0 0.08 0 0 0 0 0.12 0 0 0 0.45 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    background-size: 220px 220px, 420px 420px;
+  }
+  /* soft long fibres / paper grain — diagonal */
+  .fibres{position:fixed;inset:-10%;z-index:1;pointer-events:none;mix-blend-mode:overlay;opacity:0.12;transform:rotate(-12deg);
+    background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='800' height='800' viewBox='0 0 800 800'%3E%3Cfilter id='f'%3E%3CfeTurbulence type='turbulence' baseFrequency='0.012 0.65' numOctaves='2' seed='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.1 0 0 0 0 0.15 0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23f)'/%3E%3C/svg%3E");
+    background-size:800px 800px;
+  }
+  /* faint dotted constellation — adds intentional structure */
+  .dots{position:fixed;inset:0;z-index:1;pointer-events:none;opacity:0.35;mix-blend-mode:multiply;
+    background-image:radial-gradient(circle at 1px 1px, rgba(15,15,30,0.18) 0.7px, transparent 1.2px);
+    background-size:38px 38px;
+    -webkit-mask-image:radial-gradient(ellipse at 50% 40%, #000 0%, transparent 75%);
+    mask-image:radial-gradient(ellipse at 50% 40%, #000 0%, transparent 75%);
+  }
+
+  /* slow conic shimmer behind everything */
+  .shimmer{position:fixed;inset:-30%;z-index:0;pointer-events:none;opacity:0.18;
+    background:conic-gradient(from 0deg at 50% 50%,#D6E4FF 0%,#FFE3D6 25%,#E2F5D9 50%,#F0DCFF 75%,#D6E4FF 100%);
+    filter:blur(80px);animation:spin 60s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg)}}
+
+  /* canvas embryo + sperm layer — sits between mesh blobs and grain */
+  .embryo-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;width:100vw;height:100vh;mix-blend-mode:multiply;opacity:0.85}
+
+  /* mouse-reactive light point */
+  .lens{position:fixed;width:480px;height:480px;border-radius:50%;pointer-events:none;z-index:1;
+    background:radial-gradient(circle,rgba(255,255,255,0.5) 0%,rgba(214,228,255,0.3) 30%,transparent 60%);
+    transform:translate(-50%,-50%);mix-blend-mode:screen;transition:opacity 0.3s;filter:blur(20px);
+  }
+
+  .page{position:relative;z-index:2}
+
+  /* ─────── Glass surface mixin */
+  .glass{
+    background:var(--glass);
+    backdrop-filter:blur(20px) saturate(140%);
+    -webkit-backdrop-filter:blur(20px) saturate(140%);
+    border:1px solid rgba(255,255,255,0.7);
+    box-shadow:
+      inset 0 1px 0 rgba(255,255,255,0.9),
+      inset 0 -1px 0 rgba(15,15,18,0.04),
+      var(--shadow-md);
+    position:relative;
+  }
+  /* refraction edge — chromatic glow on rim */
+  .glass.refract::before{
+    content:'';position:absolute;inset:-1px;border-radius:inherit;pointer-events:none;
+    background:linear-gradient(135deg,rgba(214,228,255,0.5),rgba(255,227,214,0.35) 35%,rgba(226,245,217,0.4) 65%,rgba(240,220,255,0.45));
+    -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+    -webkit-mask-composite:xor;mask-composite:exclude;
+    padding:1px;opacity:0.7;
+  }
+
+  /* ─────── Nav */
+  .nav-shell{position:sticky;top:14px;z-index:50;padding:0 14px}
+  .nav{
+    max-width:1280px;margin:0 auto;display:flex;align-items:center;justify-content:space-between;
+    height:64px;padding:0 20px;border-radius:999px;
+    background:rgba(255,255,255,0.65);
+    backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);
+    border:1px solid rgba(255,255,255,0.8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),0 8px 32px rgba(15,15,18,0.07),0 1px 2px rgba(15,15,18,0.04);
+  }
+  .brand{display:flex;align-items:center;gap:10px;font-weight:600;letter-spacing:-0.01em}
+  .brand .mark{
+    width:28px;height:28px;border-radius:50%;
+    background:radial-gradient(circle at 30% 30%,#fff,#D6E4FF 40%,#A8C0FF 100%);
+    box-shadow:inset 0 1px 2px rgba(255,255,255,0.9),inset 0 -2px 4px rgba(15,15,18,0.10),0 2px 6px rgba(15,15,18,0.10);
+    display:flex;align-items:center;justify-content:center;color:var(--ink);font-weight:700;font-size:13px;
+  }
+  .brand .name{font-size:16px}
+  .brand .by{font-size:12px;color:var(--low);font-weight:400;margin-left:6px}
+  .brand .by b{color:var(--mute);font-weight:500}
+  .nav-links{display:flex;gap:2px}
+  .nav-links a{padding:8px 14px;border-radius:999px;font-size:14px;color:var(--mute);transition:all 0.2s}
+  .nav-links a:hover{color:var(--ink);background:rgba(15,15,18,0.05)}
+  .nav-cta{display:flex;gap:8px;align-items:center}
+  .pill-btn{
+    display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;
+    font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;transition:all 0.2s;
+    border:1px solid var(--line-2);background:rgba(255,255,255,0.7);color:var(--ink);
+  }
+  .pill-btn:hover{background:#fff;box-shadow:var(--shadow-sm)}
+  .pill-btn.prim{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+  .pill-btn.prim:hover{background:#26262C;transform:translateY(-1px);box-shadow:0 8px 20px rgba(15,15,18,0.18)}
+  .pill-btn .arr{transition:transform 0.2s}
+  .pill-btn:hover .arr{transform:translateX(3px)}
+  @media (max-width:900px){.nav-links{display:none}.nav-cta .pill-btn:not(.prim){display:none}}
+
+  /* ─────── Hero */
+  .hero{padding:80px 0 80px}
+  .badge-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;align-items:center}
+  .badge{
+    display:inline-flex;align-items:center;gap:8px;padding:7px 14px;border-radius:999px;
+    border:1px solid rgba(255,255,255,0.8);font-size:12px;color:var(--mute);
+    background:rgba(255,255,255,0.6);backdrop-filter:blur(12px);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),0 1px 2px rgba(15,15,18,0.04);
+  }
+  .badge .dot{width:6px;height:6px;border-radius:50%;background:#3DD68C;box-shadow:0 0 12px rgba(61,214,140,0.6)}
+  .badge.eyebrow{background:transparent;border:none;padding:0;color:var(--low);box-shadow:none;
+    font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.04em;text-transform:uppercase}
+
+  h1.display{
+    font-family:'Geist',sans-serif;font-weight:400;letter-spacing:-0.045em;line-height:0.94;
+    font-size:clamp(56px,9.5vw,148px);margin:0;color:var(--ink);
+  }
+  h1.display .line{display:block}
+  h1.display em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400;letter-spacing:-0.02em;color:var(--ink-2)}
+
+  .hero-foot{display:grid;grid-template-columns:1.2fr 1fr;gap:48px;margin-top:48px;align-items:end}
+  .lede{font-size:19px;line-height:1.5;color:var(--mute);max-width:520px;margin:0;font-weight:400}
+  .lede b{color:var(--ink);font-weight:500}
+  .hero-cta{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:24px}
+  .hero-stats{display:flex;gap:32px;justify-content:flex-end;flex-wrap:wrap}
+  .stat{text-align:right}
+  .stat .n{font-size:48px;font-weight:400;letter-spacing:-0.03em;line-height:1;color:var(--ink)}
+  .stat .l{font-size:11px;color:var(--low);text-transform:uppercase;letter-spacing:0.06em;margin-top:8px;font-family:'Geist Mono',monospace}
+  @media (max-width:900px){
+    .hero-foot{grid-template-columns:1fr;gap:28px;align-items:start}
+    .hero-stats{justify-content:flex-start}
+    .stat{text-align:left}
+  }
+
+  /* ─────── Marquee */
+  .marquee{
+    margin:0 14px;border-radius:28px;overflow:hidden;padding:18px 0;
+    background:rgba(255,255,255,0.5);
+    backdrop-filter:blur(20px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.7);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-sm);
+    position:relative;
+  }
+  .marquee::before,.marquee::after{content:'';position:absolute;top:0;bottom:0;width:80px;z-index:2;pointer-events:none}
+  .marquee::before{left:0;background:linear-gradient(90deg,rgba(245,243,238,1),transparent)}
+  .marquee::after{right:0;background:linear-gradient(-90deg,rgba(245,243,238,1),transparent)}
+  .marquee-track{display:flex;gap:64px;animation:scroll 40s linear infinite;white-space:nowrap;font-family:'Geist Mono',monospace;font-size:14px;color:var(--mute)}
+  .marquee-track span{display:inline-flex;align-items:center;gap:24px}
+  .marquee-track span::after{content:'•';color:var(--ink);margin-left:64px;opacity:0.4}
+  @keyframes scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+  /* ─────── Section scaffold */
+  section.section{padding:120px 0;position:relative}
+  .sec-head{display:grid;grid-template-columns:200px 1fr;gap:48px;margin-bottom:56px;align-items:start}
+  .sec-num{font-family:'Geist Mono',monospace;font-size:13px;color:var(--low);
+    padding-top:8px;display:flex;align-items:center;gap:10px}
+  .sec-num::before{content:'';width:24px;height:1px;background:var(--ink)}
+  .sec-title{font-size:clamp(36px,5vw,68px);font-weight:400;letter-spacing:-0.035em;line-height:1.0;margin:0 0 20px;max-width:18ch;color:var(--ink)}
+  .sec-title em{font-family:'Instrument Serif',serif;font-style:italic;font-weight:400}
+  .sec-sub{font-size:17px;color:var(--mute);max-width:600px;line-height:1.55;margin:0}
+  @media (max-width:720px){
+    .sec-head{grid-template-columns:1fr;gap:14px;margin-bottom:36px}
+    section.section{padding:72px 0}
+  }
+
+  /* ─────── About bento */
+  .about-bento{display:grid;grid-template-columns:repeat(6,1fr);gap:14px}
+  .b-card{
+    border-radius:28px;padding:32px;position:relative;overflow:hidden;
+    transition:transform 0.4s cubic-bezier(.2,.8,.2,1),box-shadow 0.4s;
+  }
+  .b-card.glass{background:var(--glass-strong)}
+  .b-card:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),inset 0 -1px 0 rgba(15,15,18,0.04),var(--shadow-lg)}
+  .b-card .b-eye{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--low);margin-bottom:14px}
+  .b-card h3{font-size:24px;font-weight:500;letter-spacing:-0.02em;margin:0 0 12px;color:var(--ink)}
+  .b-card p{margin:0;color:var(--mute);font-size:15px;line-height:1.55}
+
+  .b-lede{grid-column:span 4;padding:48px;
+    background:linear-gradient(135deg,rgba(214,228,255,0.6),rgba(240,220,255,0.5));
+    border:1px solid rgba(255,255,255,0.8);
+    backdrop-filter:blur(20px) saturate(150%);
+  }
+  .b-lede .quote{font-family:'Instrument Serif',serif;font-style:italic;font-size:clamp(26px,2.8vw,40px);line-height:1.18;letter-spacing:-0.01em;color:var(--ink);margin:0 0 24px;max-width:22ch;font-weight:400}
+  .b-lede p{font-size:16px;max-width:46ch;color:var(--ink-2)}
+
+  .b-meta{grid-column:span 2;display:flex;flex-direction:column;gap:14px;padding:0;background:transparent;border:none;box-shadow:none}
+  .b-meta:hover{transform:none;box-shadow:none}
+  .meta-cell{padding:24px;border-radius:20px;
+    background:rgba(255,255,255,0.7);backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,0.8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-sm);
+    flex:1;display:flex;flex-direction:column;justify-content:center;
+  }
+  .meta-cell .k{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--low);margin-bottom:8px}
+  .meta-cell .v{font-size:18px;font-weight:500;letter-spacing:-0.01em;color:var(--ink)}
+  .meta-cell .v small{display:block;font-weight:400;font-size:13px;color:var(--mute);margin-top:6px;letter-spacing:0;line-height:1.45}
+
+  .b-quad{grid-column:span 6;display:grid;grid-template-columns:repeat(4,1fr);gap:14px;padding:0;background:transparent;border:none;box-shadow:none}
+  .b-quad:hover{transform:none;box-shadow:none}
+  .quad-cell{padding:28px;border-radius:22px;
+    background:rgba(255,255,255,0.7);backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,0.75);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-sm);
+    transition:all 0.3s;
+  }
+  .quad-cell:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-md)}
+  .quad-cell .qn{font-family:'Geist Mono',monospace;font-size:11px;color:var(--low);letter-spacing:0.06em;margin-bottom:8px}
+  .quad-cell .qk{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--low);margin-bottom:6px}
+  .quad-cell .qv{font-size:20px;font-weight:500;letter-spacing:-0.01em;line-height:1.2;color:var(--ink)}
+  .quad-cell .qs{font-size:13px;color:var(--mute);margin-top:6px}
+
+  @media (max-width:900px){
+    .about-bento{grid-template-columns:1fr}
+    .b-lede,.b-meta,.b-quad{grid-column:auto}
+    .b-quad{grid-template-columns:1fr 1fr}
+  }
+
+  /* ─────── Modules — bento */
+  .mods{display:grid;grid-template-columns:repeat(12,1fr);gap:14px}
+  .mod{
+    border-radius:24px;padding:28px;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(20px) saturate(150%);
+    border:1px solid rgba(255,255,255,0.78);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-sm);
+    position:relative;overflow:hidden;
+    transition:transform 0.35s cubic-bezier(.2,.8,.2,1),box-shadow 0.35s;
+    min-height:220px;display:flex;flex-direction:column;justify-content:space-between;
+  }
+  .mod:hover{transform:translateY(-4px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-md)}
+  .mod .head{display:flex;justify-content:space-between;align-items:flex-start}
+  .mod .ic{
+    width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;
+    background:rgba(255,255,255,0.8);
+    border:1px solid rgba(255,255,255,0.9);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),0 2px 6px rgba(15,15,18,0.06);
+    color:var(--ink);
+  }
+  .mod .num{font-family:'Geist Mono',monospace;font-size:12px;color:var(--low)}
+  .mod h3{font-size:22px;font-weight:500;letter-spacing:-0.02em;margin:24px 0 8px;color:var(--ink)}
+  .mod p{margin:0;color:var(--mute);font-size:14px;line-height:1.55}
+  .mod.size-4{grid-column:span 4}
+  .mod.size-6{grid-column:span 6}
+  .mod.size-3{grid-column:span 3}
+  .mod.featured{
+    background:linear-gradient(135deg,rgba(214,228,255,0.7),rgba(240,220,255,0.55));
+    border-color:rgba(255,255,255,0.85);
+  }
+  .mod.featured .ic{background:rgba(255,255,255,0.9)}
+  .mod.featured h3{font-size:28px}
+  .mod.tint-mint{background:linear-gradient(135deg,rgba(226,245,217,0.65),rgba(255,255,255,0.55))}
+  .mod.tint-peach{background:linear-gradient(135deg,rgba(255,227,214,0.6),rgba(255,255,255,0.55))}
+  .mod.tint-lilac{background:linear-gradient(135deg,rgba(240,220,255,0.6),rgba(255,255,255,0.55))}
+  .mod.tint-sky{background:linear-gradient(135deg,rgba(214,228,255,0.6),rgba(255,255,255,0.55))}
+  @media (max-width:1100px){
+    .mod.size-3,.mod.size-4{grid-column:span 6}
+    .mod.size-6{grid-column:span 12}
+  }
+  @media (max-width:700px){
+    .mod.size-3,.mod.size-4,.mod.size-6{grid-column:span 12}
+  }
+
+  /* ─────── Architecture viz */
+  .arch{
+    border-radius:28px;padding:40px;position:relative;overflow:hidden;
+    background:rgba(255,255,255,0.55);
+    backdrop-filter:blur(24px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-md);
+  }
+  .arch-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:28px}
+  .arch-head .t{font-family:'Geist Mono',monospace;font-size:13px;color:var(--mute)}
+  .arch-head .t b{color:var(--ink)}
+  .arch-head .v{font-family:'Geist Mono',monospace;font-size:12px;color:var(--ink);
+    padding:5px 12px;border:1px solid rgba(15,15,18,0.12);border-radius:999px;background:rgba(255,255,255,0.8)}
+
+  .arch-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+  .arch-tier{
+    padding:24px;border-radius:20px;
+    background:rgba(255,255,255,0.7);
+    border:1px solid rgba(255,255,255,0.85);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),var(--shadow-sm);
+    transition:all 0.3s;
+  }
+  .arch-tier:hover{transform:translateY(-3px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),var(--shadow-md)}
+  .arch-tier .lvl{font-family:'Geist Mono',monospace;font-size:11px;color:var(--low);letter-spacing:0.06em;text-transform:uppercase;margin-bottom:10px}
+  .arch-tier .nm{font-size:20px;font-weight:500;letter-spacing:-0.02em;margin-bottom:14px;color:var(--ink)}
+  .arch-tier.core{
+    background:linear-gradient(135deg,rgba(214,228,255,0.75),rgba(240,220,255,0.65));
+  }
+  .arch-tier.core .nm{font-size:22px}
+  .arch-chips{display:flex;gap:6px;flex-wrap:wrap}
+  .arch-chips span{
+    padding:5px 11px;border:1px solid rgba(15,15,18,0.10);border-radius:9px;
+    font-size:12px;color:var(--mute);background:rgba(255,255,255,0.85);
+    font-family:'Geist Mono',monospace;
+  }
+  .arch-foot{display:flex;justify-content:space-between;margin-top:24px;font-family:'Geist Mono',monospace;font-size:12px;color:var(--low)}
+  .arch-foot .pulse{display:inline-flex;align-items:center;gap:8px}
+  .arch-foot .pulse::before{content:'';width:6px;height:6px;border-radius:50%;background:#3DD68C;box-shadow:0 0 10px rgba(61,214,140,0.6);animation:pulse 2s infinite}
+  @keyframes pulse{50%{opacity:0.4}}
+  @media (max-width:800px){.arch-grid{grid-template-columns:1fr}}
+
+  /* ─────── Custom split */
+  .split{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .split .col{
+    border-radius:28px;padding:40px;position:relative;overflow:hidden;
+    background:rgba(255,255,255,0.65);
+    backdrop-filter:blur(20px) saturate(150%);
+    border:1px solid rgba(255,255,255,0.8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.9),var(--shadow-md);
+  }
+  .split .col.accent{
+    background:linear-gradient(135deg,rgba(226,245,217,0.65),rgba(214,228,255,0.55));
+  }
+  .split .pill-tag{display:inline-flex;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;
+    color:var(--ink);padding:6px 12px;border:1px solid rgba(15,15,18,0.10);border-radius:999px;background:rgba(255,255,255,0.85);margin-bottom:20px}
+  .split h3{font-size:30px;font-weight:500;letter-spacing:-0.025em;margin:0 0 12px;line-height:1.1;color:var(--ink)}
+  .split .col > p{color:var(--mute);margin:0 0 24px;max-width:42ch}
+  .split ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:12px}
+  .split li{display:flex;gap:14px;align-items:flex-start;padding:14px 0;border-top:1px solid rgba(15,15,18,0.08)}
+  .split li:first-child{border-top:none}
+  .split .ck{
+    flex-shrink:0;width:24px;height:24px;border-radius:50%;
+    background:rgba(255,255,255,0.95);border:1px solid rgba(15,15,18,0.10);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;font-size:13px;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),0 1px 2px rgba(15,15,18,0.06);
+  }
+  .split li .t{font-size:15px;font-weight:500;color:var(--ink)}
+  .split li .s{display:block;font-size:13px;color:var(--mute);margin-top:3px;font-weight:400}
+  @media (max-width:900px){.split{grid-template-columns:1fr}}
+
+  /* ─────── Contact */
+  .contact-wrap{display:grid;grid-template-columns:1.4fr 1fr;gap:32px;align-items:start}
+  .form{
+    border-radius:28px;padding:40px;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(24px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.85);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),var(--shadow-md);
+  }
+  .form h3{font-size:26px;font-weight:500;letter-spacing:-0.025em;margin:0 0 6px;color:var(--ink)}
+  .form > p{margin:0 0 24px;color:var(--mute)}
+  .row{display:grid;gap:14px;margin-bottom:14px}
+  .row.two{grid-template-columns:1fr 1fr}
+  .field label{display:block;font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--low);margin-bottom:8px}
+  .field input,.field select,.field textarea{
+    width:100%;padding:13px 16px;border-radius:14px;
+    background:rgba(255,255,255,0.85);
+    border:1px solid rgba(15,15,18,0.10);
+    color:var(--ink);font:inherit;font-size:15px;outline:none;
+    transition:border-color 0.2s,box-shadow 0.2s,background 0.2s;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.95);
+  }
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--ink);background:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),0 0 0 4px rgba(15,15,18,0.06)}
+  .field textarea{min-height:110px;resize:vertical;font-family:inherit}
+  @media (max-width:600px){.row.two{grid-template-columns:1fr}}
+
+  .info-stack{display:flex;flex-direction:column;gap:14px}
+  .info{
+    border-radius:22px;padding:24px;
+    background:rgba(255,255,255,0.7);
+    backdrop-filter:blur(20px);
+    border:1px solid rgba(255,255,255,0.8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),var(--shadow-sm);
+    transition:all 0.3s;
+  }
+  .info:hover{transform:translateY(-2px);box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),var(--shadow-md)}
+  .info .k{font-family:'Geist Mono',monospace;font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--low);margin-bottom:8px}
+  .info .v{font-size:17px;font-weight:500;letter-spacing:-0.01em;color:var(--ink)}
+  .info .v a{color:inherit;border-bottom:1px solid rgba(15,15,18,0.15);transition:border-color 0.2s}
+  .info .v a:hover{border-color:var(--ink)}
+  .info .v small{display:block;font-weight:400;font-size:13px;color:var(--mute);margin-top:6px;line-height:1.5}
+  @media (max-width:900px){.contact-wrap{grid-template-columns:1fr}}
+
+  /* ─────── Footer */
+  footer{padding:60px 0 40px;margin-top:60px}
+  .foot-card{
+    border-radius:32px;padding:48px;
+    background:rgba(255,255,255,0.6);
+    backdrop-filter:blur(24px) saturate(160%);
+    border:1px solid rgba(255,255,255,0.8);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,0.95),var(--shadow-md);
+  }
+  .foot-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr 1fr;gap:48px;margin-bottom:48px}
+  .foot-brand .name{font-size:20px;font-weight:500;margin-bottom:14px;display:flex;align-items:center;gap:10px}
+  .foot-brand p{color:var(--mute);font-size:14px;max-width:38ch;margin:0 0 20px;line-height:1.5}
+  .foot-by{display:flex;align-items:center;gap:12px;padding:10px 14px;
+    border:1px solid rgba(15,15,18,0.08);border-radius:14px;background:rgba(255,255,255,0.7);width:fit-content}
+  .foot-by .l{font-family:'Geist Mono',monospace;font-size:11px;color:var(--low);letter-spacing:0.06em;text-transform:uppercase}
+  .foot-by .n{font-weight:500}
+  .foot-col h4{font-family:'Geist Mono',monospace;font-size:11px;color:var(--low);letter-spacing:0.08em;text-transform:uppercase;margin:0 0 16px;font-weight:500}
+  .foot-col ul{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:10px}
+  .foot-col a{color:var(--mute);font-size:14px;transition:color 0.2s}
+  .foot-col a:hover{color:var(--ink)}
+  .foot-legal{display:flex;justify-content:space-between;align-items:center;padding-top:28px;border-top:1px solid rgba(15,15,18,0.08);
+    font-family:'Geist Mono',monospace;font-size:12px;color:var(--low);flex-wrap:wrap;gap:16px}
+  .foot-legal .badges{display:flex;gap:8px}
+  .foot-legal .badges span{padding:4px 10px;border:1px solid rgba(15,15,18,0.08);border-radius:999px;background:rgba(255,255,255,0.7)}
+  @media (max-width:900px){.foot-grid{grid-template-columns:1fr 1fr;gap:32px}}
+  @media (max-width:600px){.foot-grid{grid-template-columns:1fr}.foot-card{padding:32px}}
+</style>
+</head>
+<body>
+
+<div class="shimmer"></div>
+<div class="mesh">
+  <div class="blob b1"></div><div class="blob b2"></div><div class="blob b3"></div><div class="blob b4"></div>
+  <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
+</div>
+<canvas id="embryoCanvas" class="embryo-canvas"></canvas>
+<div class="lens" id="lens"></div>
+<div class="fibres"></div>
+<div class="dots"></div>
+<div class="grain"></div>
+<script src="embryo-canvas.js" defer></script>
+<script>
+(function(){
+  const lens = document.getElementById('lens');
+  let tx = window.innerWidth/2, ty = window.innerHeight/2;
+  let cx = tx, cy = ty;
+  window.addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; }, {passive:true});
+  function tick(){
+    cx += (tx - cx) * 0.08;
+    cy += (ty - cy) * 0.08;
+    lens.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+(function(){
+  const form = document.getElementById('poptavkaForm');
+  if(!form) return;
+  const hint = document.getElementById('poptavkaHint');
+  form.addEventListener('submit', function(e){
+    e.preventDefault();
+    const v = id => (document.getElementById(id)?.value || '').trim();
+    const jmeno = v('f-jmeno');
+    const pozice = v('f-pozice');
+    const pracoviste = v('f-pracoviste');
+    const telefon = v('f-tel');
+    const email = v('f-mail');
+    const velikost = v('f-velikost');
+    const zprava = v('f-zprava');
+    if(!jmeno || !email){
+      hint.textContent = 'Vyplňte prosím jméno a e-mail.';
+      hint.style.color = '#C44';
+      return;
+    }
+    const subject = `Poptávka MEDEVID — ${pracoviste || jmeno}`;
+    const body = [
+      `Jméno a příjmení: ${jmeno}`,
+      pozice && `Pozice: ${pozice}`,
+      pracoviste && `Pracoviště: ${pracoviste}`,
+      telefon && `Telefon: ${telefon}`,
+      `E-mail: ${email}`,
+      velikost && `Velikost provozu: ${velikost}`,
+      '',
+      zprava || '(zpráva nevyplněna)'
+    ].filter(Boolean).join('\n');
+    const href = `mailto:info@medevid.cz?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    hint.style.color = '';
+    hint.textContent = 'Otevírám poštovní klienta…';
+    window.location.href = href;
+  });
+})();
+</script>
+
+<div class="page">
+
+<!-- ─────── Nav -->
+<div class="nav-shell">
+  <nav class="nav">
+    <a href="#" class="brand">
+      <span class="mark">M</span>
+      <span class="name">MEDEVID</span>
+      <span class="by"><b>by</b> SmartIT</span>
+    </a>
+    <div class="nav-links">
+      <a href="#system">Systém</a>
+      <a href="#customization">Customizace</a>
+      <a href="#about">O nás</a>
+      <a href="#contact">Kontakt</a>
+    </div>
+    <div class="nav-cta">
+      <button class="pill-btn">Demo</button>
+      <button class="pill-btn prim">Domluvit hovor <span class="arr">→</span></button>
+    </div>
+  </nav>
+</div>
+
+<!-- ─────── Hero -->
+<section class="hero">
+  <div class="wrap">
+    <div class="badge-row">
+      <span class="badge eyebrow">SmartIT s.r.o. · Plzeň · 2011</span>
+      <span class="badge"><span class="dot"></span>v 24.4 production</span>
+      <span class="badge">14 let bez výpadku vývoje</span>
+    </div>
+
+    <h1 class="display">
+      <span class="line">Software</span>
+      <span class="line"><em>a&nbsp;procesy,</em></span>
+      <span class="line">které drží spolu.</span>
+    </h1>
+
+    <div class="hero-foot">
+      <div>
+        <p class="lede">MEDEVID je <b>kompletní informační systém</b> pro IVF kliniky. Dodáváme jej jako celek — vlastní software, integrace s&nbsp;vašimi zařízeními a&nbsp;customizaci na&nbsp;míru každému pracovišti.</p>
+        <div class="hero-cta">
+          <button class="pill-btn prim">Domluvit konzultaci <span class="arr">→</span></button>
+          <button class="pill-btn">Prohlédnout moduly</button>
+        </div>
+      </div>
+      <div class="hero-stats">
+        <div class="stat"><div class="n">14</div><div class="l">let v oboru</div></div>
+        <div class="stat"><div class="n">10</div><div class="l">modulů</div></div>
+        <div class="stat"><div class="n">100%</div><div class="l">vývoj v ČR</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── Marquee -->
+<div class="marquee">
+  <div class="marquee-track">
+    <span>SÚKL · ÚZIS · NRAR · HL7 · FHIR · DICOM · eRecept · Pohoda · ABRA · GDPR · TLS 1.3 · ČR datacentrum · Daily backup</span>
+    <span>SÚKL · ÚZIS · NRAR · HL7 · FHIR · DICOM · eRecept · Pohoda · ABRA · GDPR · TLS 1.3 · ČR datacentrum · Daily backup</span>
+  </div>
+</div>
+
+<!-- ─────── About -->
+<section class="section" id="about">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">01 / Profil dodavatele</div>
+      <div>
+        <h2 class="sec-title">Vyvíjíme MEDEVID 14&nbsp;let. Pro kliniky, které potřebují <em>spolehlivost,</em> ne&nbsp;startup-experimenty.</h2>
+        <p class="sec-sub">SmartIT s.r.o. je česká softwarová společnost se sídlem v&nbsp;Plzni. Specializujeme se na zdravotnické informační systémy a&nbsp;jejich integraci s&nbsp;hardwarem v&nbsp;klinickém provozu.</p>
+      </div>
+    </div>
+
+    <div class="about-bento">
+      <div class="b-card b-lede">
+        <div class="b-eye">Co stavíme</div>
+        <p class="quote">Software, který přežije přesun procesu, změnu legislativy i&nbsp;generaci hardwaru.</p>
+        <p>MEDEVID dnes provozují kliniky asistované reprodukce v&nbsp;ČR. Pokrývá kompletní klinický provoz — od&nbsp;CRM a&nbsp;první komunikace s&nbsp;pacientkou až po&nbsp;laboratoř, fakturaci a&nbsp;reporting. Vyvíjíme jej kontinuálně, ve&nbsp;spolupráci s&nbsp;klinikami, které jej denně používají.</p>
+      </div>
+
+      <div class="b-meta">
+        <div class="meta-cell">
+          <div class="k">Pod jednou střechou</div>
+          <div class="v">Vývoj, provoz i&nbsp;podpora<small>Žádní prostředníci, žádné offshore týmy. Mluvíte přímo s&nbsp;lidmi, kteří systém napsali.</small></div>
+        </div>
+      </div>
+
+      <div class="b-quad">
+        <div class="quad-cell"><div class="qn">·01</div><div class="qk">Sídlo</div><div class="qv">Plzeň, ČR</div><div class="qs">Klatovská 1209/134</div></div>
+        <div class="quad-cell"><div class="qn">·02</div><div class="qk">Identifikace</div><div class="qv">IČO 29121612</div><div class="qs">C 26624 · KS Plzeň</div></div>
+        <div class="quad-cell"><div class="qn">·03</div><div class="qk">Založeno</div><div class="qv">31. 10. 2011</div><div class="qs">14 let nepřetržitého vývoje</div></div>
+        <div class="quad-cell"><div class="qn">·04</div><div class="qk">Tým</div><div class="qv">21 lidí</div><div class="qs">vývoj · podpora · klinika</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── System / modules -->
+<section class="section" id="system">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">02 / Co MEDEVID umí</div>
+      <div>
+        <h2 class="sec-title">Deset modulů. <em>Jedna</em> platforma. Všechno mluví se&nbsp;vším.</h2>
+        <p class="sec-sub">Karty pacientek, CRM, cykly, laboratoř, sklad, fakturace, eRecept a&nbsp;NRAR — bez exportů a&nbsp;bez „integračních projektů". Jeden datový model, jedny identity, jeden audit trail.</p>
+      </div>
+    </div>
+
+    <div class="mods">
+      <div class="mod size-6 featured">
+        <div class="head">
+          <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="3.5"/><path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6"/></svg></div>
+          <div class="num">01</div>
+        </div>
+        <div>
+          <h3>Karty pacientek</h3>
+          <p>Anamnéza, partner, předchozí léčba, alergie, dokumenty. Vše na&nbsp;jednom místě, s&nbsp;plnou historií změn a&nbsp;auditovatelnou stopou.</p>
+        </div>
+      </div>
+
+      <div class="mod size-6 tint-lilac">
+        <div class="head">
+          <div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 3v18M3 12h18" stroke-linecap="round"/><circle cx="12" cy="12" r="9"/></svg></div>
+          <div class="num">02</div>
+        </div>
+        <div>
+          <h3>IVF cyklus</h3>
+          <p>Stimulace, monitoring, OPU, ET, kryo. Vlastní protokoly a&nbsp;šablony, integrované s&nbsp;laboratoří.</p>
+        </div>
+      </div>
+
+      <div class="mod size-4">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5h14v4H5zM5 11h14v4H5zM5 17h14v4H5z"/><path d="M9 7h2M9 13h2M9 19h2" stroke-linecap="round"/></svg></div><div class="num">03</div></div>
+        <div><h3>Laboratoř</h3><p>Embryologický deník, hodnocení blastocyst, kryokonzervace. Snímky, časové razítko, dvojitá kontrola.</p></div>
+      </div>
+      <div class="mod size-4 tint-sky">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3 10h18M9 14h6" stroke-linecap="round"/></svg></div><div class="num">04</div></div>
+        <div><h3>eRecept &amp; NRAR</h3><p>Plné napojení na&nbsp;SÚKL a&nbsp;registr asistované reprodukce. Reporting do&nbsp;ÚZIS automaticky, jedním klikem.</p></div>
+      </div>
+      <div class="mod size-4">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M7 8l4 4-4 4M13 16h4" stroke-linecap="round"/></svg></div><div class="num">05</div></div>
+        <div><h3>DICOM &amp; obrazová dokumentace</h3><p>Ultrazvuk, hysteroskopie, embryo timelapse. Náhledy přímo v&nbsp;kartě, bez přepínání aplikací.</p></div>
+      </div>
+
+      <div class="mod size-3 tint-peach">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg></div><div class="num">06</div></div>
+        <div><h3>Sklad léčiv</h3><p>Šarže, expirace, čárové kódy. Inventura mobilním skenerem.</p></div>
+      </div>
+      <div class="mod size-3">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2" stroke-linecap="round"/></svg></div><div class="num">07</div></div>
+        <div><h3>Plánování</h3><p>Kapacity sálů, sestry, lékaři, biologové. Multi-resource booking s&nbsp;notifikacemi.</p></div>
+      </div>
+      <div class="mod size-3">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M7 9h10M7 13h7M7 17h4" stroke-linecap="round"/></svg></div><div class="num">08</div></div>
+        <div><h3>Fakturace &amp; pojišťovny</h3><p>Veřejná i&nbsp;soukromá léčba, výkazy do&nbsp;VZP, balíčky.</p></div>
+      </div>
+      <div class="mod size-3 tint-mint">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 17l5-5 4 4 7-7"/><path d="M14 9h6v6" stroke-linecap="round"/></svg></div><div class="num">09</div></div>
+        <div><h3>Reporting &amp; analytika</h3><p>Success rate, time-to-treatment, kohortní analýzy.</p></div>
+      </div>
+
+      <div class="mod size-6 tint-lilac">
+        <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h13a4 4 0 0 1 0 8H7l-3 3V5z" stroke-linejoin="round"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="13" cy="9" r="1" fill="currentColor"/></svg></div><div class="num">10</div></div>
+        <div><h3>CRM &amp; komunikace</h3><p>Pipeline od&nbsp;prvního dotazu po&nbsp;dokončený cyklus. Připomínky, e‑maily, SMS, follow-upy — vše napojené na&nbsp;kartu pacientky.</p></div>
+      </div>
+
+      <div class="mod size-6" style="background:transparent;border:none;padding:0;min-height:0;box-shadow:none">
+        <div class="arch" style="height:100%">
+          <div class="arch-head">
+            <div class="t"><b>Architektura nasazení</b></div>
+            <div class="v">v 24.4 · production</div>
+          </div>
+          <div class="arch-grid">
+            <div class="arch-tier">
+              <div class="lvl">01 · Provoz</div>
+              <div class="nm">Klinika</div>
+              <div class="arch-chips"><span>Web</span><span>Mobil</span></div>
+            </div>
+            <div class="arch-tier core">
+              <div class="lvl">02 · Jádro</div>
+              <div class="nm">MEDEVID Core</div>
+              <div class="arch-chips"><span>10 modulů</span><span>1 model</span><span>audit</span></div>
+            </div>
+            <div class="arch-tier">
+              <div class="lvl">03 · Integrace</div>
+              <div class="nm">Externí systémy</div>
+              <div class="arch-chips"><span>SÚKL</span><span>NRAR</span><span>HL7</span><span>Pohoda</span></div>
+            </div>
+          </div>
+          <div class="arch-foot">
+            <span class="pulse">ČR datacentrum · TLS 1.3 · daily backup</span>
+            <span>uptime: stable</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── Customization -->
+<section class="section" id="customization">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">03 / Customizace na míru</div>
+      <div>
+        <h2 class="sec-title">Žádné dvě kliniky nepracují stejně. Tak proč by měly mít <em>stejný</em> systém?</h2>
+        <p class="sec-sub">MEDEVID je jádro. Každé nasazení je customizace — vlastní formuláře, protokoly, workflow, integrace. Bez dotazů na produkťák, bez čekání na další release.</p>
+      </div>
+    </div>
+
+    <div class="split">
+      <div class="col">
+        <span class="pill-tag">Bez programování</span>
+        <h3>Konfigurovatelné z&nbsp;administrace</h3>
+        <p>Provoz si tyto věci spravuje sám. Žádné požadavky na&nbsp;vývoj.</p>
+        <ul>
+          <li><span class="ck">✓</span><div><span class="t">Formuláře a&nbsp;pole karty pacientky</span><span class="s">vlastní položky, validace, povinnost</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Šablony protokolů a&nbsp;dokumentů</span><span class="s">WYSIWYG editor, dynamická pole</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Workflow a&nbsp;stavy cyklu</span><span class="s">vlastní stavový diagram</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Číselníky, ceník, role uživatelů</span><span class="s">auditovatelná verze</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Notifikace a&nbsp;reporty</span><span class="s">e-mail, SMS, dashboard</span></div></li>
+        </ul>
+      </div>
+      <div class="col accent">
+        <span class="pill-tag">Vývoj na&nbsp;míru</span>
+        <h3>Co děláme my pro&nbsp;vás</h3>
+        <p>Když konfigurace nestačí. Vlastní kód, vlastní integrace, dlouhodobá podpora.</p>
+        <ul>
+          <li><span class="ck">✓</span><div><span class="t">Integrace s&nbsp;LIS / RIS / účetnictvím</span><span class="s">HL7, FHIR, SOAP, REST, CSV</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Vlastní moduly pro speciální obory</span><span class="s">onkofertilita, dárcovství, surrogacy</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Reporty pro vedení a&nbsp;audit</span><span class="s">BI, kohortní analýzy, kvalita</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Mobilní aplikace pro pacientky</span><span class="s">vlastní branding, vlastní obsah</span></div></li>
+          <li><span class="ck">✓</span><div><span class="t">Speciální hardware</span><span class="s">integrace inkubátorů, mikroskopů</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── Contact -->
+<section class="section" id="contact">
+  <div class="wrap">
+    <div class="sec-head">
+      <div class="sec-num">04 / Kontakt</div>
+      <div>
+        <h2 class="sec-title">Pojďme si promluvit o&nbsp;<em>vašem</em> provozu.</h2>
+        <p class="sec-sub">Odpovídáme do&nbsp;24&nbsp;hodin. Žádný lead-funnel — ozve se vám konkrétní implementační konzultant.</p>
+      </div>
+    </div>
+
+    <div class="contact-wrap">
+      <form class="form" id="poptavkaForm">
+        <h3>Nezávazná poptávka</h3>
+        <p>Stačí pár vět. Domluvíme se na&nbsp;30minutový hovor a&nbsp;projdeme váš provoz.</p>
+
+        <div class="row two">
+          <div class="field"><label for="f-jmeno">Jméno a&nbsp;příjmení</label><input id="f-jmeno" name="jmeno" placeholder="MUDr. Jan Novák" required/></div>
+          <div class="field"><label for="f-pozice">Pozice</label><input id="f-pozice" name="pozice" placeholder="Vedoucí lékař"/></div>
+        </div>
+        <div class="row two">
+          <div class="field"><label for="f-pracoviste">Pracoviště</label><input id="f-pracoviste" name="pracoviste" placeholder="IVF centrum"/></div>
+          <div class="field"><label for="f-tel">Telefon</label><input id="f-tel" name="telefon" type="tel" placeholder="+420 ..."/></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="f-mail">E-mail</label><input id="f-mail" name="email" type="email" placeholder="jan.novak@klinika.cz" required/></div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="f-velikost">Velikost provozu</label>
+            <select id="f-velikost" name="velikost">
+              <option>do&nbsp;200 cyklů ročně</option>
+              <option>200–500 cyklů ročně</option>
+              <option>500–1000 cyklů ročně</option>
+              <option>nad&nbsp;1000 cyklů · řetězec</option>
+            </select>
+          </div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="f-zprava">O&nbsp;čem to&nbsp;je</label><textarea id="f-zprava" name="zprava" placeholder="Pár vět stačí. Kde vás teď tlačí bota? Co od systému potřebujete?"></textarea></div>
+        </div>
+        <button type="submit" class="pill-btn prim" style="width:100%;justify-content:center;padding:15px">Odeslat poptávku <span class="arr">→</span></button>
+        <p id="poptavkaHint" style="margin:14px 0 0;font-size:13px;color:var(--mute);min-height:1.2em" aria-live="polite"></p>
+      </form>
+
+      <div class="info-stack">
+        <div class="info">
+          <div class="k">Sídlo</div>
+          <div class="v">SmartIT s.r.o.<small>Klatovská třída 1209/134<br>301 00 Plzeň</small></div>
+        </div>
+        <div class="info">
+          <div class="k">Identifikace</div>
+          <div class="v">IČO 29121612<small>C 26624, KS Plzeň · zápis 31. 10. 2011<br>DIČ CZ29121612</small></div>
+        </div>
+        <div class="info">
+          <div class="k">Obchod a&nbsp;poptávky</div>
+          <div class="v"><a href="mailto:info@medevid.cz">info@medevid.cz</a><small><a href="tel:+420377241000">+420 377 241 000</a> · pondělí–pátek 8–17</small></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ─────── Footer -->
+<footer>
+  <div class="wrap">
+    <div class="foot-card">
+      <div class="foot-grid">
+        <div class="foot-brand">
+          <div class="name"><span class="brand"><span class="mark">M</span></span> MEDEVID</div>
+          <p>Informační systém a&nbsp;customizace pro kliniky asistované reprodukce. Vyvíjíme od&nbsp;roku 2011 v&nbsp;Plzni.</p>
+          <div class="foot-by"><span class="l">Dodává</span><span class="n">SmartIT s.r.o.</span></div>
+        </div>
+        <div class="foot-col">
+          <h4>Produkt</h4>
+          <ul>
+            <li><a href="#system">Moduly</a></li>
+            <li><a href="#customization">Customizace</a></li>
+            <li><a href="#">Roadmap</a></li>
+            <li><a href="#">Changelog</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Společnost</h4>
+          <ul>
+            <li><a href="#about">O&nbsp;nás</a></li>
+            <li><a href="#">Proces</a></li>
+            <li><a href="#">Kariéra</a></li>
+            <li><a href="#contact">Kontakt</a></li>
+          </ul>
+        </div>
+        <div class="foot-col">
+          <h4>Právní</h4>
+          <ul>
+            <li><a href="#">Obchodní podmínky</a></li>
+            <li><a href="#">Zpracování dat (GDPR)</a></li>
+            <li><a href="#">Cookies</a></li>
+            <li><a href="#">SLA &amp; servis</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="foot-legal">
+        <span>© 2025 SmartIT s.r.o. · IČO 29121612 · Vyrobeno v&nbsp;Plzni.</span>
+        <span class="badges"><span>GDPR</span><span>v 24.4</span></span>
+      </div>
+    </div>
+  </div>
+</footer>
+
+</div>
+
+</body>
+</html>
