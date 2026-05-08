@@ -2,20 +2,20 @@
 <html lang="cs">
 <head>
 <meta charset="utf-8">
-<title>MEDEVID · SmartIT — Informační systém pro IVF kliniky</title>
+<title>MEDEVID · SmartIT s.r.o.</title>
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="MEDEVID je kompletní informační systém pro kliniky asistované reprodukce. Karty pacientek, IVF cykly, laboratoř, eRecept, NRAR. Vyvíjí SmartIT s.r.o. v Plzni od roku 2011.">
+<meta name="description" content="Software pro kliniky asistované reprodukce. Vyvíjí SmartIT s.r.o.">
 <meta name="theme-color" content="#F5F3EE">
 <meta name="author" content="SmartIT s.r.o.">
 <meta name="robots" content="index,follow">
 <meta property="og:type" content="website">
-<meta property="og:title" content="MEDEVID · Informační systém pro IVF kliniky">
-<meta property="og:description" content="Kompletní informační systém pro kliniky asistované reprodukce. Software, integrace a customizace na míru. Vývoj v Plzni od roku 2011.">
+<meta property="og:title" content="MEDEVID · SmartIT s.r.o.">
+<meta property="og:description" content="Software pro kliniky asistované reprodukce. Vyvíjí SmartIT s.r.o.">
 <meta property="og:locale" content="cs_CZ">
 <meta property="og:site_name" content="MEDEVID">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="MEDEVID · Informační systém pro IVF kliniky">
-<meta name="twitter:description" content="Kompletní informační systém pro kliniky asistované reprodukce. Vývoj v Plzni od roku 2011.">
+<meta name="twitter:title" content="MEDEVID · SmartIT s.r.o.">
+<meta name="twitter:description" content="Software pro kliniky asistované reprodukce. Vyvíjí SmartIT s.r.o.">
 <meta property="og:image" content="assets/medevid-logo-circular.png">
 <meta property="og:image:width" content="164">
 <meta property="og:image:height" content="126">
@@ -116,12 +116,6 @@
   /* canvas embryo + sperm layer — sits between mesh blobs and grain */
   .embryo-canvas{position:fixed;inset:0;z-index:1;pointer-events:none;width:100vw;height:100vh;mix-blend-mode:multiply;opacity:0.85}
 
-  /* mouse-reactive light point */
-  .lens{position:fixed;width:480px;height:480px;border-radius:50%;pointer-events:none;z-index:1;
-    background:radial-gradient(circle,rgba(255,255,255,0.5) 0%,rgba(214,228,255,0.3) 30%,transparent 60%);
-    transform:translate(-50%,-50%);mix-blend-mode:screen;transition:opacity 0.3s;filter:blur(20px);
-  }
-
   .page{position:relative;z-index:2}
 
   /* ─────── Glass surface mixin */
@@ -177,7 +171,12 @@
   .pill-btn.prim:hover{background:#26262C;transform:translateY(-1px);box-shadow:0 8px 20px rgba(15,15,18,0.18)}
   .pill-btn .arr{transition:transform 0.2s}
   .pill-btn:hover .arr{transform:translateX(3px)}
-  @media (max-width:900px){.nav-links{display:none}.nav-cta .pill-btn:not(.prim){display:none}}
+  .pill-btn.lang-toggle{
+    font-family:'Geist Mono',monospace;font-size:12px;letter-spacing:0.06em;
+    padding:9px 12px;min-width:46px;justify-content:center;color:var(--mute);
+  }
+  .pill-btn.lang-toggle:hover{color:var(--ink)}
+  @media (max-width:900px){.nav-links{display:none}.nav-cta .pill-btn:not(.prim):not(.lang-toggle){display:none}}
 
   /* ─────── Hero */
   .hero{padding:80px 0 80px}
@@ -490,27 +489,219 @@
   <div class="orb o1"></div><div class="orb o2"></div><div class="orb o3"></div>
 </div>
 <canvas id="embryoCanvas" class="embryo-canvas"></canvas>
-<div class="lens" id="lens"></div>
 <div class="fibres"></div>
 <div class="dots"></div>
 <div class="grain"></div>
 <script src="embryo-canvas.js" defer></script>
 <script>
-(function(){
-  const lens = document.getElementById('lens');
-  let tx = window.innerWidth/2, ty = window.innerHeight/2;
-  let cx = tx, cy = ty;
-  window.addEventListener('pointermove', e => { tx = e.clientX; ty = e.clientY; }, {passive:true});
-  function tick(){
-    cx += (tx - cx) * 0.08;
-    cy += (ty - cy) * 0.08;
-    lens.style.transform = `translate(${cx}px, ${cy}px) translate(-50%, -50%)`;
-    requestAnimationFrame(tick);
-  }
-  tick();
-})();
+// ─────────── i18n
+const I18N = {
+  cs: {
+    'meta.title': 'MEDEVID · SmartIT s.r.o.',
+    'meta.desc': 'Software pro kliniky asistované reprodukce. Vyvíjí SmartIT s.r.o.',
+    'nav.product': 'Produkt',
+    'nav.about': 'O nás',
+    'nav.contact': 'Kontakt',
+    'nav.cta': 'Kontakt',
+    'nav.lang.aria': 'Přepnout jazyk',
+    'brand.by': 'by',
+    'hero.lede.bold': 'Software pro kliniky asistované reprodukce.',
+    'hero.lede.rest': ' Vyvíjí SmartIT s.r.o.',
+    'about.num': '01 / O společnosti',
+    'about.title.html': 'SmartIT s.r.o. — česká softwarová <em>společnost.</em>',
+    'about.sub': 'Vyvíjíme software pro kliniky asistované reprodukce.',
+    'about.lede.eye': 'Čím se zabýváme',
+    'about.lede.body': 'SmartIT s.r.o. vyvíjí a dodává software MEDEVID pro kliniky asistované reprodukce. Společnost vznikla v roce 2011 a sídlí v České republice.',
+    'about.meta.k': 'Působnost',
+    'about.meta.v': 'Česká republika',
+    'about.meta.s': 'Česká softwarová společnost.',
+    'about.q.office.k': 'Sídlo',
+    'about.q.office.v': 'Plzeň, ČR',
+    'about.q.office.s': 'Klatovská třída 1209/134',
+    'about.q.id.k': 'IČO',
+    'about.q.id.s': 'DIČ CZ29121612',
+    'about.q.reg.k': 'Zápis',
+    'about.q.reg.v': '31. 10. 2011',
+    'about.q.reg.s': 'C 26624, KS Plzeň',
+    'about.q.contact.k': 'Kontakt',
+    'about.q.contact.s': 'e-mail',
+    'sys.num': '02 / Co MEDEVID pokrývá',
+    'sys.title.html': 'Hlavní oblasti, na které je software <em>zaměřen.</em>',
+    'sys.sub': 'Vedení karet pacientek, IVF cyklus, laboratoř, plánování, sklad, fakturace, reporting a komunikace s pacientkami.',
+    'mod.1.h': 'Karty pacientek',
+    'mod.1.p': 'Anamnéza, partner, předchozí léčba, alergie, dokumenty. Vše na jednom místě, s historií změn.',
+    'mod.2.h': 'IVF cyklus',
+    'mod.2.p': 'Stimulace, monitoring, OPU, ET, kryo. Vlastní protokoly a šablony, propojené s laboratoří.',
+    'mod.3.h': 'Laboratoř',
+    'mod.3.p': 'Embryologický deník, hodnocení blastocyst, kryokonzervace.',
+    'mod.4.h': 'Předepisování léků',
+    'mod.4.p': 'Předpisy léčivých přípravků, lékové záznamy a dávkování v rámci karty pacientky.',
+    'mod.5.h': 'Obrazová dokumentace',
+    'mod.5.p': 'Ultrazvuk, hysteroskopie, embryo timelapse. Náhledy přímo v kartě.',
+    'mod.6.h': 'Sklad léčiv',
+    'mod.6.p': 'Šarže, expirace, inventura.',
+    'mod.7.h': 'Plánování',
+    'mod.7.p': 'Kapacity sálů, sestry, lékaři, biologové. Notifikace a připomínky.',
+    'mod.8.h': 'Fakturace & pojišťovny',
+    'mod.8.p': 'Veřejná i soukromá léčba, výkony pro pojišťovny.',
+    'mod.9.h': 'Reporting',
+    'mod.9.p': 'Přehledy o výsledcích a průběhu péče.',
+    'mod.10.h': 'Komunikace s pacientkami',
+    'mod.10.p': 'Kontakty, e‑maily, SMS, připomínky termínů — propojené s kartou pacientky.',
+    'contact.num': '03 / Kontakt',
+    'contact.title.html': '<em>Kontakt.</em>',
+    'contact.sub': 'Pokud nás chcete kontaktovat, použijte níže uvedený formulář nebo e-mail.',
+    'contact.form.h': 'Napište nám',
+    'contact.form.p': 'Vyplňte jméno, e-mail a krátkou zprávu.',
+    'contact.form.name': 'Jméno a příjmení',
+    'contact.form.email': 'E-mail',
+    'contact.form.msg': 'Zpráva',
+    'contact.form.namePh': 'Jan Novák',
+    'contact.form.emailPh': 'jan.novak@example.com',
+    'contact.form.msgPh': 'Krátký dotaz nebo zpráva.',
+    'contact.form.submit': 'Odeslat zprávu',
+    'contact.info.office.k': 'Sídlo',
+    'contact.info.office.html': 'SmartIT s.r.o.<small>Klatovská třída 1209/134<br>301 00 Plzeň</small>',
+    'contact.info.id.k': 'Identifikace',
+    'contact.info.id.html': 'IČO 29121612<small>C 26624, KS Plzeň · zápis 31. 10. 2011<br>DIČ CZ29121612</small>',
+    'contact.info.email.k': 'E-mail',
+    'foot.brand.p': 'Software pro kliniky asistované reprodukce. SmartIT s.r.o., od roku 2011.',
+    'foot.by': 'Dodává',
+    'foot.col.product': 'Produkt',
+    'foot.col.product.1': 'Co MEDEVID pokrývá',
+    'foot.col.company': 'Společnost',
+    'foot.col.company.1': 'O nás',
+    'foot.col.company.2': 'Kontakt',
+    'foot.col.legal': 'Právní',
+    'foot.col.legal.1': 'Zpracování dat (GDPR)',
+    'foot.legal': '© 2026 SmartIT s.r.o. · IČO 29121612 · ČR.',
+    'form.err.required': 'Vyplňte prosím jméno a e-mail.',
+    'form.opening': 'Otevírám poštovní klienta…',
+    'form.subject': 'Zpráva z webu MEDEVID — ',
+    'form.body.name': 'Jméno a příjmení: ',
+    'form.body.email': 'E-mail: ',
+    'form.body.empty': '(zpráva nevyplněna)',
+  },
+  en: {
+    'meta.title': 'MEDEVID · SmartIT s.r.o.',
+    'meta.desc': 'Software for assisted reproduction clinics. Developed by SmartIT s.r.o.',
+    'nav.product': 'Product',
+    'nav.about': 'About',
+    'nav.contact': 'Contact',
+    'nav.cta': 'Contact',
+    'nav.lang.aria': 'Switch language',
+    'brand.by': 'by',
+    'hero.lede.bold': 'Software for assisted reproduction clinics.',
+    'hero.lede.rest': ' Developed by SmartIT s.r.o.',
+    'about.num': '01 / About',
+    'about.title.html': 'SmartIT s.r.o. — a Czech software <em>company.</em>',
+    'about.sub': 'We develop software for assisted reproduction clinics.',
+    'about.lede.eye': 'What we do',
+    'about.lede.body': 'SmartIT s.r.o. develops and delivers MEDEVID software for assisted reproduction clinics. Founded in 2011, based in the Czech Republic.',
+    'about.meta.k': 'Region',
+    'about.meta.v': 'Czech Republic',
+    'about.meta.s': 'Czech software company.',
+    'about.q.office.k': 'Registered office',
+    'about.q.office.v': 'Plzeň, CZ',
+    'about.q.office.s': 'Klatovská třída 1209/134',
+    'about.q.id.k': 'Company ID',
+    'about.q.id.s': 'VAT CZ29121612',
+    'about.q.reg.k': 'Registered',
+    'about.q.reg.v': '31 Oct 2011',
+    'about.q.reg.s': 'C 26624, Reg. Court Plzeň',
+    'about.q.contact.k': 'Contact',
+    'about.q.contact.s': 'e-mail',
+    'sys.num': '02 / What MEDEVID covers',
+    'sys.title.html': 'Main areas the software <em>covers.</em>',
+    'sys.sub': 'Patient records, IVF cycle, laboratory, scheduling, drug stock, billing, reporting and patient communication.',
+    'mod.1.h': 'Patient records',
+    'mod.1.p': 'Medical history, partner, previous treatment, allergies, documents. All in one place, with change history.',
+    'mod.2.h': 'IVF cycle',
+    'mod.2.p': 'Stimulation, monitoring, OPU, ET, cryo. Custom protocols and templates, linked with the laboratory.',
+    'mod.3.h': 'Laboratory',
+    'mod.3.p': 'Embryology log, blastocyst grading, cryopreservation.',
+    'mod.4.h': 'Prescriptions',
+    'mod.4.p': 'Drug prescriptions, medication records and dosing within the patient record.',
+    'mod.5.h': 'Imaging',
+    'mod.5.p': 'Ultrasound, hysteroscopy, embryo timelapse. Previews directly in the record.',
+    'mod.6.h': 'Drug stock',
+    'mod.6.p': 'Batches, expiration, inventory.',
+    'mod.7.h': 'Scheduling',
+    'mod.7.p': 'Theatre capacity, nurses, doctors, biologists. Notifications and reminders.',
+    'mod.8.h': 'Billing & insurers',
+    'mod.8.p': 'Public and private care, procedures for insurers.',
+    'mod.9.h': 'Reporting',
+    'mod.9.p': 'Overviews of outcomes and care progress.',
+    'mod.10.h': 'Patient communication',
+    'mod.10.p': 'Contacts, e‑mails, SMS, appointment reminders — linked with the patient record.',
+    'contact.num': '03 / Contact',
+    'contact.title.html': '<em>Contact.</em>',
+    'contact.sub': 'To get in touch, use the form below or e-mail.',
+    'contact.form.h': 'Write to us',
+    'contact.form.p': 'Fill in your name, e-mail and a short message.',
+    'contact.form.name': 'Name',
+    'contact.form.email': 'E-mail',
+    'contact.form.msg': 'Message',
+    'contact.form.namePh': 'John Doe',
+    'contact.form.emailPh': 'john.doe@example.com',
+    'contact.form.msgPh': 'Short question or message.',
+    'contact.form.submit': 'Send message',
+    'contact.info.office.k': 'Registered office',
+    'contact.info.office.html': 'SmartIT s.r.o.<small>Klatovská třída 1209/134<br>301 00 Plzeň, Czech Republic</small>',
+    'contact.info.id.k': 'Identification',
+    'contact.info.id.html': 'Company ID 29121612<small>C 26624, Reg. Court Plzeň · registered 31 Oct 2011<br>VAT CZ29121612</small>',
+    'contact.info.email.k': 'E-mail',
+    'foot.brand.p': 'Software for assisted reproduction clinics. SmartIT s.r.o., since 2011.',
+    'foot.by': 'By',
+    'foot.col.product': 'Product',
+    'foot.col.product.1': 'What MEDEVID covers',
+    'foot.col.company': 'Company',
+    'foot.col.company.1': 'About',
+    'foot.col.company.2': 'Contact',
+    'foot.col.legal': 'Legal',
+    'foot.col.legal.1': 'Data processing (GDPR)',
+    'foot.legal': '© 2026 SmartIT s.r.o. · Company ID 29121612 · CZ.',
+    'form.err.required': 'Please fill in your name and e-mail.',
+    'form.opening': 'Opening mail client…',
+    'form.subject': 'Message from MEDEVID website — ',
+    'form.body.name': 'Name: ',
+    'form.body.email': 'E-mail: ',
+    'form.body.empty': '(no message)',
+  },
+};
 
-(function(){
+const LANG_KEY = 'medevid.lang';
+function detectLang(){
+  try { const v = localStorage.getItem(LANG_KEY); if(v === 'cs' || v === 'en') return v; } catch(_){}
+  const nav = (navigator.language || 'cs').toLowerCase();
+  return nav.startsWith('cs') || nav.startsWith('sk') ? 'cs' : 'en';
+}
+let currentLang = detectLang();
+
+function t(key){ return (I18N[currentLang] && I18N[currentLang][key]) || (I18N.cs[key] ?? key); }
+
+function applyLang(lang){
+  if(lang !== 'cs' && lang !== 'en') lang = 'cs';
+  currentLang = lang;
+  try { localStorage.setItem(LANG_KEY, lang); } catch(_){}
+  document.documentElement.lang = lang;
+  document.title = t('meta.title');
+  const md = document.querySelector('meta[name="description"]');
+  if(md) md.setAttribute('content', t('meta.desc'));
+  document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.getAttribute('data-i18n')); });
+  document.querySelectorAll('[data-i18n-html]').forEach(el => { el.innerHTML = t(el.getAttribute('data-i18n-html')); });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder'))); });
+  document.querySelectorAll('[data-i18n-aria-label]').forEach(el => { el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria-label'))); });
+  // language toggle button shows the *other* language as its label
+  const langBtn = document.getElementById('langToggle');
+  if(langBtn) langBtn.textContent = lang === 'cs' ? 'EN' : 'CS';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  applyLang(currentLang);
+  const langBtn = document.getElementById('langToggle');
+  if(langBtn) langBtn.addEventListener('click', () => applyLang(currentLang === 'cs' ? 'en' : 'cs'));
+
   const form = document.getElementById('poptavkaForm');
   if(!form) return;
   const hint = document.getElementById('poptavkaHint');
@@ -518,34 +709,26 @@
     e.preventDefault();
     const v = id => (document.getElementById(id)?.value || '').trim();
     const jmeno = v('f-jmeno');
-    const pozice = v('f-pozice');
-    const pracoviste = v('f-pracoviste');
-    const telefon = v('f-tel');
     const email = v('f-mail');
-    const velikost = v('f-velikost');
     const zprava = v('f-zprava');
     if(!jmeno || !email){
-      hint.textContent = 'Vyplňte prosím jméno a e-mail.';
+      hint.textContent = t('form.err.required');
       hint.style.color = '#C44';
       return;
     }
-    const subject = `Poptávka MEDEVID — ${pracoviste || jmeno}`;
+    const subject = t('form.subject') + jmeno;
     const body = [
-      `Jméno a příjmení: ${jmeno}`,
-      pozice && `Pozice: ${pozice}`,
-      pracoviste && `Pracoviště: ${pracoviste}`,
-      telefon && `Telefon: ${telefon}`,
-      `E-mail: ${email}`,
-      velikost && `Velikost provozu: ${velikost}`,
+      t('form.body.name') + jmeno,
+      t('form.body.email') + email,
       '',
-      zprava || '(zpráva nevyplněna)'
-    ].filter(Boolean).join('\n');
+      zprava || t('form.body.empty')
+    ].join('\n');
     const href = `mailto:info@medevid.cz?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     hint.style.color = '';
-    hint.textContent = 'Otevírám poštovní klienta…';
+    hint.textContent = t('form.opening');
     window.location.href = href;
   });
-})();
+});
 </script>
 
 <div class="page">
@@ -556,17 +739,16 @@
     <a href="#" class="brand">
       <img class="mark" src="assets/medevid-mark.png" alt="" width="28" height="28">
       <span class="name">MEDEVID</span>
-      <span class="by"><b>by</b> SmartIT</span>
+      <span class="by"><b data-i18n="brand.by">by</b> SmartIT</span>
     </a>
     <div class="nav-links">
-      <a href="#system">Systém</a>
-      <a href="#customization">Customizace</a>
-      <a href="#about">O nás</a>
-      <a href="#contact">Kontakt</a>
+      <a href="#system" data-i18n="nav.product">Produkt</a>
+      <a href="#about" data-i18n="nav.about">O nás</a>
+      <a href="#contact" data-i18n="nav.contact">Kontakt</a>
     </div>
     <div class="nav-cta">
-      <button class="pill-btn">Demo</button>
-      <button class="pill-btn prim">Domluvit hovor <span class="arr">→</span></button>
+      <button type="button" id="langToggle" class="pill-btn lang-toggle" data-i18n-aria-label="nav.lang.aria" aria-label="Přepnout jazyk">EN</button>
+      <a href="#contact" class="pill-btn"><span data-i18n="nav.cta">Kontakt</span> <span class="arr">→</span></a>
     </div>
   </nav>
 </div>
@@ -574,73 +756,47 @@
 <!-- ─────── Hero -->
 <section class="hero">
   <div class="wrap">
-    <div class="badge-row">
-      <span class="badge eyebrow">SmartIT s.r.o. · Plzeň · 2011</span>
-      <span class="badge"><span class="dot"></span>v 24.4 production</span>
-      <span class="badge">14 let bez výpadku vývoje</span>
-    </div>
-
     <h1 class="display">
-      <span class="line">Software</span>
-      <span class="line"><em>a&nbsp;procesy,</em></span>
-      <span class="line">které drží spolu.</span>
+      <span class="line">MEDEVID</span>
     </h1>
 
     <div class="hero-foot">
       <div>
-        <p class="lede">MEDEVID je <b>kompletní informační systém</b> pro IVF kliniky. Dodáváme jej jako celek — vlastní software, integrace s&nbsp;vašimi zařízeními a&nbsp;customizaci na&nbsp;míru každému pracovišti.</p>
-        <div class="hero-cta">
-          <button class="pill-btn prim">Domluvit konzultaci <span class="arr">→</span></button>
-          <button class="pill-btn">Prohlédnout moduly</button>
-        </div>
-      </div>
-      <div class="hero-stats">
-        <div class="stat"><div class="n">14</div><div class="l">let v oboru</div></div>
-        <div class="stat"><div class="n">10</div><div class="l">modulů</div></div>
-        <div class="stat"><div class="n">100%</div><div class="l">vývoj v ČR</div></div>
+        <p class="lede"><b data-i18n="hero.lede.bold">Software pro kliniky asistované reprodukce.</b><span data-i18n="hero.lede.rest"> Vyvíjí SmartIT s.r.o.</span></p>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ─────── Marquee -->
-<div class="marquee">
-  <div class="marquee-track">
-    <span>SÚKL · ÚZIS · NRAR · HL7 · FHIR · DICOM · eRecept · Pohoda · ABRA · GDPR · TLS 1.3 · ČR datacentrum · Daily backup</span>
-    <span>SÚKL · ÚZIS · NRAR · HL7 · FHIR · DICOM · eRecept · Pohoda · ABRA · GDPR · TLS 1.3 · ČR datacentrum · Daily backup</span>
-  </div>
-</div>
-
 <!-- ─────── About -->
 <section class="section" id="about">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">01 / Profil dodavatele</div>
+      <div class="sec-num" data-i18n="about.num">01 / O společnosti</div>
       <div>
-        <h2 class="sec-title">Vyvíjíme MEDEVID 14&nbsp;let. Pro kliniky, které potřebují <em>spolehlivost,</em> ne&nbsp;startup-experimenty.</h2>
-        <p class="sec-sub">SmartIT s.r.o. je česká softwarová společnost se sídlem v&nbsp;Plzni. Specializujeme se na zdravotnické informační systémy a&nbsp;jejich integraci s&nbsp;hardwarem v&nbsp;klinickém provozu.</p>
+        <h2 class="sec-title" data-i18n-html="about.title.html">SmartIT s.r.o. — česká softwarová <em>společnost.</em></h2>
+        <p class="sec-sub" data-i18n="about.sub">Vyvíjíme software pro kliniky asistované reprodukce.</p>
       </div>
     </div>
 
     <div class="about-bento">
       <div class="b-card b-lede">
-        <div class="b-eye">Co stavíme</div>
-        <p class="quote">Software, který přežije přesun procesu, změnu legislativy i&nbsp;generaci hardwaru.</p>
-        <p>MEDEVID dnes provozují kliniky asistované reprodukce v&nbsp;ČR. Pokrývá kompletní klinický provoz — od&nbsp;CRM a&nbsp;první komunikace s&nbsp;pacientkou až po&nbsp;laboratoř, fakturaci a&nbsp;reporting. Vyvíjíme jej kontinuálně, ve&nbsp;spolupráci s&nbsp;klinikami, které jej denně používají.</p>
+        <div class="b-eye" data-i18n="about.lede.eye">Čím se zabýváme</div>
+        <p data-i18n="about.lede.body">SmartIT s.r.o. vyvíjí a dodává software MEDEVID pro kliniky asistované reprodukce. Společnost vznikla v roce 2011 a sídlí v České republice.</p>
       </div>
 
       <div class="b-meta">
         <div class="meta-cell">
-          <div class="k">Pod jednou střechou</div>
-          <div class="v">Vývoj, provoz i&nbsp;podpora<small>Žádní prostředníci, žádné offshore týmy. Mluvíte přímo s&nbsp;lidmi, kteří systém napsali.</small></div>
+          <div class="k" data-i18n="about.meta.k">Působnost</div>
+          <div class="v"><span data-i18n="about.meta.v">Česká republika</span><small data-i18n="about.meta.s">Česká softwarová společnost.</small></div>
         </div>
       </div>
 
       <div class="b-quad">
-        <div class="quad-cell"><div class="qn">·01</div><div class="qk">Sídlo</div><div class="qv">Plzeň, ČR</div><div class="qs">Klatovská 1209/134</div></div>
-        <div class="quad-cell"><div class="qn">·02</div><div class="qk">Identifikace</div><div class="qv">IČO 29121612</div><div class="qs">C 26624 · KS Plzeň</div></div>
-        <div class="quad-cell"><div class="qn">·03</div><div class="qk">Založeno</div><div class="qv">31. 10. 2011</div><div class="qs">14 let nepřetržitého vývoje</div></div>
-        <div class="quad-cell"><div class="qn">·04</div><div class="qk">Tým</div><div class="qv">21 lidí</div><div class="qs">vývoj · podpora · klinika</div></div>
+        <div class="quad-cell"><div class="qn">·01</div><div class="qk" data-i18n="about.q.office.k">Sídlo</div><div class="qv" data-i18n="about.q.office.v">Plzeň, ČR</div><div class="qs" data-i18n="about.q.office.s">Klatovská třída 1209/134</div></div>
+        <div class="quad-cell"><div class="qn">·02</div><div class="qk" data-i18n="about.q.id.k">IČO</div><div class="qv">29121612</div><div class="qs" data-i18n="about.q.id.s">DIČ CZ29121612</div></div>
+        <div class="quad-cell"><div class="qn">·03</div><div class="qk" data-i18n="about.q.reg.k">Zápis</div><div class="qv" data-i18n="about.q.reg.v">31. 10. 2011</div><div class="qs" data-i18n="about.q.reg.s">C 26624, KS Plzeň</div></div>
+        <div class="quad-cell"><div class="qn">·04</div><div class="qk" data-i18n="about.q.contact.k">Kontakt</div><div class="qv">info@medevid.cz</div><div class="qs" data-i18n="about.q.contact.s">e-mail</div></div>
       </div>
     </div>
   </div>
@@ -650,10 +806,10 @@
 <section class="section" id="system">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">02 / Co MEDEVID umí</div>
+      <div class="sec-num" data-i18n="sys.num">02 / Co MEDEVID pokrývá</div>
       <div>
-        <h2 class="sec-title">Deset modulů. <em>Jedna</em> platforma. Všechno mluví se&nbsp;vším.</h2>
-        <p class="sec-sub">Karty pacientek, CRM, cykly, laboratoř, sklad, fakturace, eRecept a&nbsp;NRAR — bez exportů a&nbsp;bez „integračních projektů". Jeden datový model, jedny identity, jeden audit trail.</p>
+        <h2 class="sec-title" data-i18n-html="sys.title.html">Hlavní oblasti, na které je software <em>zaměřen.</em></h2>
+        <p class="sec-sub" data-i18n="sys.sub">Vedení karet pacientek, IVF cyklus, laboratoř, plánování, sklad, fakturace, reporting a komunikace s pacientkami.</p>
       </div>
     </div>
 
@@ -664,8 +820,8 @@
           <div class="num">01</div>
         </div>
         <div>
-          <h3>Karty pacientek</h3>
-          <p>Anamnéza, partner, předchozí léčba, alergie, dokumenty. Vše na&nbsp;jednom místě, s&nbsp;plnou historií změn a&nbsp;auditovatelnou stopou.</p>
+          <h3 data-i18n="mod.1.h">Karty pacientek</h3>
+          <p data-i18n="mod.1.p">Anamnéza, partner, předchozí léčba, alergie, dokumenty. Vše na jednom místě, s historií změn.</p>
         </div>
       </div>
 
@@ -675,114 +831,44 @@
           <div class="num">02</div>
         </div>
         <div>
-          <h3>IVF cyklus</h3>
-          <p>Stimulace, monitoring, OPU, ET, kryo. Vlastní protokoly a&nbsp;šablony, integrované s&nbsp;laboratoří.</p>
+          <h3 data-i18n="mod.2.h">IVF cyklus</h3>
+          <p data-i18n="mod.2.p">Stimulace, monitoring, OPU, ET, kryo. Vlastní protokoly a šablony, propojené s laboratoří.</p>
         </div>
       </div>
 
       <div class="mod size-4">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 5h14v4H5zM5 11h14v4H5zM5 17h14v4H5z"/><path d="M9 7h2M9 13h2M9 19h2" stroke-linecap="round"/></svg></div><div class="num">03</div></div>
-        <div><h3>Laboratoř</h3><p>Embryologický deník, hodnocení blastocyst, kryokonzervace. Snímky, časové razítko, dvojitá kontrola.</p></div>
+        <div><h3 data-i18n="mod.3.h">Laboratoř</h3><p data-i18n="mod.3.p">Embryologický deník, hodnocení blastocyst, kryokonzervace.</p></div>
       </div>
       <div class="mod size-4 tint-sky">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="6" width="18" height="13" rx="1.5"/><path d="M3 10h18M9 14h6" stroke-linecap="round"/></svg></div><div class="num">04</div></div>
-        <div><h3>eRecept &amp; NRAR</h3><p>Plné napojení na&nbsp;SÚKL a&nbsp;registr asistované reprodukce. Reporting do&nbsp;ÚZIS automaticky, jedním klikem.</p></div>
+        <div><h3 data-i18n="mod.4.h">Předepisování léků</h3><p data-i18n="mod.4.p">Předpisy léčivých přípravků, lékové záznamy a dávkování v rámci karty pacientky.</p></div>
       </div>
       <div class="mod size-4">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="3" width="18" height="18" rx="1.5"/><path d="M7 8l4 4-4 4M13 16h4" stroke-linecap="round"/></svg></div><div class="num">05</div></div>
-        <div><h3>DICOM &amp; obrazová dokumentace</h3><p>Ultrazvuk, hysteroskopie, embryo timelapse. Náhledy přímo v&nbsp;kartě, bez přepínání aplikací.</p></div>
+        <div><h3 data-i18n="mod.5.h">Obrazová dokumentace</h3><p data-i18n="mod.5.p">Ultrazvuk, hysteroskopie, embryo timelapse. Náhledy přímo v kartě.</p></div>
       </div>
 
       <div class="mod size-3 tint-peach">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg></div><div class="num">06</div></div>
-        <div><h3>Sklad léčiv</h3><p>Šarže, expirace, čárové kódy. Inventura mobilním skenerem.</p></div>
+        <div><h3 data-i18n="mod.6.h">Sklad léčiv</h3><p data-i18n="mod.6.p">Šarže, expirace, inventura.</p></div>
       </div>
       <div class="mod size-3">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="9"/><path d="M12 6v6l4 2" stroke-linecap="round"/></svg></div><div class="num">07</div></div>
-        <div><h3>Plánování</h3><p>Kapacity sálů, sestry, lékaři, biologové. Multi-resource booking s&nbsp;notifikacemi.</p></div>
+        <div><h3 data-i18n="mod.7.h">Plánování</h3><p data-i18n="mod.7.p">Kapacity sálů, sestry, lékaři, biologové. Notifikace a připomínky.</p></div>
       </div>
       <div class="mod size-3">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="4" width="18" height="16" rx="1.5"/><path d="M7 9h10M7 13h7M7 17h4" stroke-linecap="round"/></svg></div><div class="num">08</div></div>
-        <div><h3>Fakturace &amp; pojišťovny</h3><p>Veřejná i&nbsp;soukromá léčba, výkazy do&nbsp;VZP, balíčky.</p></div>
+        <div><h3 data-i18n="mod.8.h">Fakturace &amp; pojišťovny</h3><p data-i18n="mod.8.p">Veřejná i soukromá léčba, výkony pro pojišťovny.</p></div>
       </div>
       <div class="mod size-3 tint-mint">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 17l5-5 4 4 7-7"/><path d="M14 9h6v6" stroke-linecap="round"/></svg></div><div class="num">09</div></div>
-        <div><h3>Reporting &amp; analytika</h3><p>Success rate, time-to-treatment, kohortní analýzy.</p></div>
+        <div><h3 data-i18n="mod.9.h">Reporting</h3><p data-i18n="mod.9.p">Přehledy o výsledcích a průběhu péče.</p></div>
       </div>
 
       <div class="mod size-6 tint-lilac">
         <div class="head"><div class="ic"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M3 5h13a4 4 0 0 1 0 8H7l-3 3V5z" stroke-linejoin="round"/><circle cx="9" cy="9" r="1" fill="currentColor"/><circle cx="13" cy="9" r="1" fill="currentColor"/></svg></div><div class="num">10</div></div>
-        <div><h3>CRM &amp; komunikace</h3><p>Pipeline od&nbsp;prvního dotazu po&nbsp;dokončený cyklus. Připomínky, e‑maily, SMS, follow-upy — vše napojené na&nbsp;kartu pacientky.</p></div>
-      </div>
-
-      <div class="mod size-6" style="background:transparent;border:none;padding:0;min-height:0;box-shadow:none">
-        <div class="arch" style="height:100%">
-          <div class="arch-head">
-            <div class="t"><b>Architektura nasazení</b></div>
-            <div class="v">v 24.4 · production</div>
-          </div>
-          <div class="arch-grid">
-            <div class="arch-tier">
-              <div class="lvl">01 · Provoz</div>
-              <div class="nm">Klinika</div>
-              <div class="arch-chips"><span>Web</span><span>Mobil</span></div>
-            </div>
-            <div class="arch-tier core">
-              <div class="lvl">02 · Jádro</div>
-              <div class="nm">MEDEVID Core</div>
-              <div class="arch-chips"><span>10 modulů</span><span>1 model</span><span>audit</span></div>
-            </div>
-            <div class="arch-tier">
-              <div class="lvl">03 · Integrace</div>
-              <div class="nm">Externí systémy</div>
-              <div class="arch-chips"><span>SÚKL</span><span>NRAR</span><span>HL7</span><span>Pohoda</span></div>
-            </div>
-          </div>
-          <div class="arch-foot">
-            <span class="pulse">ČR datacentrum · TLS 1.3 · daily backup</span>
-            <span>uptime: stable</span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ─────── Customization -->
-<section class="section" id="customization">
-  <div class="wrap">
-    <div class="sec-head">
-      <div class="sec-num">03 / Customizace na míru</div>
-      <div>
-        <h2 class="sec-title">Žádné dvě kliniky nepracují stejně. Tak proč by měly mít <em>stejný</em> systém?</h2>
-        <p class="sec-sub">MEDEVID je jádro. Každé nasazení je customizace — vlastní formuláře, protokoly, workflow, integrace. Bez dotazů na produkťák, bez čekání na další release.</p>
-      </div>
-    </div>
-
-    <div class="split">
-      <div class="col">
-        <span class="pill-tag">Bez programování</span>
-        <h3>Konfigurovatelné z&nbsp;administrace</h3>
-        <p>Provoz si tyto věci spravuje sám. Žádné požadavky na&nbsp;vývoj.</p>
-        <ul>
-          <li><span class="ck">✓</span><div><span class="t">Formuláře a&nbsp;pole karty pacientky</span><span class="s">vlastní položky, validace, povinnost</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Šablony protokolů a&nbsp;dokumentů</span><span class="s">WYSIWYG editor, dynamická pole</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Workflow a&nbsp;stavy cyklu</span><span class="s">vlastní stavový diagram</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Číselníky, ceník, role uživatelů</span><span class="s">auditovatelná verze</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Notifikace a&nbsp;reporty</span><span class="s">e-mail, SMS, dashboard</span></div></li>
-        </ul>
-      </div>
-      <div class="col accent">
-        <span class="pill-tag">Vývoj na&nbsp;míru</span>
-        <h3>Co děláme my pro&nbsp;vás</h3>
-        <p>Když konfigurace nestačí. Vlastní kód, vlastní integrace, dlouhodobá podpora.</p>
-        <ul>
-          <li><span class="ck">✓</span><div><span class="t">Integrace s&nbsp;LIS / RIS / účetnictvím</span><span class="s">HL7, FHIR, SOAP, REST, CSV</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Vlastní moduly pro speciální obory</span><span class="s">onkofertilita, dárcovství, surrogacy</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Reporty pro vedení a&nbsp;audit</span><span class="s">BI, kohortní analýzy, kvalita</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Mobilní aplikace pro pacientky</span><span class="s">vlastní branding, vlastní obsah</span></div></li>
-          <li><span class="ck">✓</span><div><span class="t">Speciální hardware</span><span class="s">integrace inkubátorů, mikroskopů</span></div></li>
-        </ul>
+        <div><h3 data-i18n="mod.10.h">Komunikace s pacientkami</h3><p data-i18n="mod.10.p">Kontakty, e‑maily, SMS, připomínky termínů — propojené s kartou pacientky.</p></div>
       </div>
     </div>
   </div>
@@ -792,58 +878,43 @@
 <section class="section" id="contact">
   <div class="wrap">
     <div class="sec-head">
-      <div class="sec-num">04 / Kontakt</div>
+      <div class="sec-num" data-i18n="contact.num">03 / Kontakt</div>
       <div>
-        <h2 class="sec-title">Pojďme si promluvit o&nbsp;<em>vašem</em> provozu.</h2>
-        <p class="sec-sub">Odpovídáme do&nbsp;24&nbsp;hodin. Žádný lead-funnel — ozve se vám konkrétní implementační konzultant.</p>
+        <h2 class="sec-title" data-i18n-html="contact.title.html"><em>Kontakt.</em></h2>
+        <p class="sec-sub" data-i18n="contact.sub">Pokud nás chcete kontaktovat, použijte níže uvedený formulář nebo e-mail.</p>
       </div>
     </div>
 
     <div class="contact-wrap">
       <form class="form" id="poptavkaForm">
-        <h3>Nezávazná poptávka</h3>
-        <p>Stačí pár vět. Domluvíme se na&nbsp;30minutový hovor a&nbsp;projdeme váš provoz.</p>
+        <h3 data-i18n="contact.form.h">Napište nám</h3>
+        <p data-i18n="contact.form.p">Vyplňte jméno, e-mail a krátkou zprávu.</p>
 
-        <div class="row two">
-          <div class="field"><label for="f-jmeno">Jméno a&nbsp;příjmení</label><input id="f-jmeno" name="jmeno" placeholder="MUDr. Jan Novák" required/></div>
-          <div class="field"><label for="f-pozice">Pozice</label><input id="f-pozice" name="pozice" placeholder="Vedoucí lékař"/></div>
-        </div>
-        <div class="row two">
-          <div class="field"><label for="f-pracoviste">Pracoviště</label><input id="f-pracoviste" name="pracoviste" placeholder="IVF centrum"/></div>
-          <div class="field"><label for="f-tel">Telefon</label><input id="f-tel" name="telefon" type="tel" placeholder="+420 ..."/></div>
+        <div class="row">
+          <div class="field"><label for="f-jmeno" data-i18n="contact.form.name">Jméno a příjmení</label><input id="f-jmeno" name="jmeno" data-i18n-placeholder="contact.form.namePh" placeholder="Jan Novák" required/></div>
         </div>
         <div class="row">
-          <div class="field"><label for="f-mail">E-mail</label><input id="f-mail" name="email" type="email" placeholder="jan.novak@klinika.cz" required/></div>
+          <div class="field"><label for="f-mail" data-i18n="contact.form.email">E-mail</label><input id="f-mail" name="email" type="email" data-i18n-placeholder="contact.form.emailPh" placeholder="jan.novak@example.com" required/></div>
         </div>
         <div class="row">
-          <div class="field"><label for="f-velikost">Velikost provozu</label>
-            <select id="f-velikost" name="velikost">
-              <option>do&nbsp;200 cyklů ročně</option>
-              <option>200–500 cyklů ročně</option>
-              <option>500–1000 cyklů ročně</option>
-              <option>nad&nbsp;1000 cyklů · řetězec</option>
-            </select>
-          </div>
+          <div class="field"><label for="f-zprava" data-i18n="contact.form.msg">Zpráva</label><textarea id="f-zprava" name="zprava" data-i18n-placeholder="contact.form.msgPh" placeholder="Krátký dotaz nebo zpráva."></textarea></div>
         </div>
-        <div class="row">
-          <div class="field"><label for="f-zprava">O&nbsp;čem to&nbsp;je</label><textarea id="f-zprava" name="zprava" placeholder="Pár vět stačí. Kde vás teď tlačí bota? Co od systému potřebujete?"></textarea></div>
-        </div>
-        <button type="submit" class="pill-btn prim" style="width:100%;justify-content:center;padding:15px">Odeslat poptávku <span class="arr">→</span></button>
+        <button type="submit" class="pill-btn prim" style="width:100%;justify-content:center;padding:15px"><span data-i18n="contact.form.submit">Odeslat zprávu</span> <span class="arr">→</span></button>
         <p id="poptavkaHint" style="margin:14px 0 0;font-size:13px;color:var(--mute);min-height:1.2em" aria-live="polite"></p>
       </form>
 
       <div class="info-stack">
         <div class="info">
-          <div class="k">Sídlo</div>
-          <div class="v">SmartIT s.r.o.<small>Klatovská třída 1209/134<br>301 00 Plzeň</small></div>
+          <div class="k" data-i18n="contact.info.office.k">Sídlo</div>
+          <div class="v" data-i18n-html="contact.info.office.html">SmartIT s.r.o.<small>Klatovská třída 1209/134<br>301 00 Plzeň</small></div>
         </div>
         <div class="info">
-          <div class="k">Identifikace</div>
-          <div class="v">IČO 29121612<small>C 26624, KS Plzeň · zápis 31. 10. 2011<br>DIČ CZ29121612</small></div>
+          <div class="k" data-i18n="contact.info.id.k">Identifikace</div>
+          <div class="v" data-i18n-html="contact.info.id.html">IČO 29121612<small>C 26624, KS Plzeň · zápis 31. 10. 2011<br>DIČ CZ29121612</small></div>
         </div>
         <div class="info">
-          <div class="k">Obchod a&nbsp;poptávky</div>
-          <div class="v"><a href="mailto:info@medevid.cz">info@medevid.cz</a><small><a href="tel:+420377241000">+420 377 241 000</a> · pondělí–pátek 8–17</small></div>
+          <div class="k" data-i18n="contact.info.email.k">E-mail</div>
+          <div class="v"><a href="mailto:info@medevid.cz">info@medevid.cz</a></div>
         </div>
       </div>
     </div>
@@ -857,40 +928,32 @@
       <div class="foot-grid">
         <div class="foot-brand">
           <div class="name"><span class="brand"><img class="mark" src="assets/medevid-mark.png" alt="" width="28" height="28"></span> MEDEVID</div>
-          <p>Informační systém a&nbsp;customizace pro kliniky asistované reprodukce. Vyvíjíme od&nbsp;roku 2011 v&nbsp;Plzni.</p>
-          <div class="foot-by"><span class="l">Dodává</span><img src="assets/smartit-logo.png" alt="SmartIT s.r.o." height="22" style="height:22px;width:auto;display:block"></div>
+          <p data-i18n="foot.brand.p">Software pro kliniky asistované reprodukce. SmartIT s.r.o., od roku 2011.</p>
+          <div class="foot-by"><span class="l" data-i18n="foot.by">Dodává</span><img src="assets/smartit-logo.png" alt="SmartIT s.r.o." height="22" style="height:22px;width:auto;display:block"></div>
         </div>
         <div class="foot-col">
-          <h4>Produkt</h4>
+          <h4 data-i18n="foot.col.product">Produkt</h4>
           <ul>
-            <li><a href="#system">Moduly</a></li>
-            <li><a href="#customization">Customizace</a></li>
-            <li><a href="#">Roadmap</a></li>
-            <li><a href="#">Changelog</a></li>
+            <li><a href="#system" data-i18n="foot.col.product.1">Co MEDEVID pokrývá</a></li>
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Společnost</h4>
+          <h4 data-i18n="foot.col.company">Společnost</h4>
           <ul>
-            <li><a href="#about">O&nbsp;nás</a></li>
-            <li><a href="#">Proces</a></li>
-            <li><a href="#">Kariéra</a></li>
-            <li><a href="#contact">Kontakt</a></li>
+            <li><a href="#about" data-i18n="foot.col.company.1">O nás</a></li>
+            <li><a href="#contact" data-i18n="foot.col.company.2">Kontakt</a></li>
           </ul>
         </div>
         <div class="foot-col">
-          <h4>Právní</h4>
+          <h4 data-i18n="foot.col.legal">Právní</h4>
           <ul>
-            <li><a href="#">Obchodní podmínky</a></li>
-            <li><a href="#">Zpracování dat (GDPR)</a></li>
-            <li><a href="#">Cookies</a></li>
-            <li><a href="#">SLA &amp; servis</a></li>
+            <li><a href="#" data-i18n="foot.col.legal.1">Zpracování dat (GDPR)</a></li>
           </ul>
         </div>
       </div>
       <div class="foot-legal">
-        <span>© 2025 SmartIT s.r.o. · IČO 29121612 · Vyrobeno v&nbsp;Plzni.</span>
-        <span class="badges"><span>GDPR</span><span>v 24.4</span></span>
+        <span data-i18n="foot.legal">© 2026 SmartIT s.r.o. · IČO 29121612 · ČR.</span>
+        <span class="badges"><span>GDPR</span></span>
       </div>
     </div>
   </div>

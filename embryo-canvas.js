@@ -20,9 +20,21 @@
   window.addEventListener('resize', resize);
 
   // ─────────── pointer (lens influence)
-  const pointer = { x: W / 2, y: H / 2, active: false };
+  const pointer = { x: W / 2, y: H / 2, active: false, lastMove: performance.now() };
   window.addEventListener('pointermove', e => {
+    const dx = e.clientX - pointer.x;
+    const dy = e.clientY - pointer.y;
     pointer.x = e.clientX; pointer.y = e.clientY; pointer.active = true;
+    // only count as "moved" when displacement is meaningful — tiny jitter doesn't reset interest
+    if (dx * dx + dy * dy > 9) pointer.lastMove = performance.now();
+  }, { passive: true });
+  window.addEventListener('pointerleave', () => {
+    pointer.active = false;
+    // gentle scatter: pick fresh random headings, slightly biased away from where the cursor last was
+    for (const s of sperm) {
+      const away = Math.atan2(s.y - pointer.y, s.x - pointer.x);
+      s.angT = away + (Math.random() - 0.5) * Math.PI;
+    }
   }, { passive: true });
 
   // ─────────── seeded rng
@@ -79,6 +91,11 @@
       tailAmp: 5 + rand() * 4,
       phase: rand() * Math.PI * 2,
       depth: 0.4 + rand() * 0.6,
+      // individual reaction to a still cursor — varies so it never looks deterministic
+      attraction: 0.35 + rand() * 0.65,        // 0.35–1.0 = how strongly this one pulls toward the pointer
+      attractionLag: 200 + rand() * 1400,      // ms — personal delay before starting to drift inward
+      orbitDir: rand() < 0.5 ? -1 : 1,         // some swirl one way, some the other (avoids point-collapse)
+      orbitOffset: 0.25 + rand() * 0.55,       // tangent offset radians, makes a loose loop instead of a dot
     });
   }
 
@@ -289,19 +306,46 @@
       drawEmbryo(e, now);
     }
 
-    // sperm drift + draw — gentle steering, slight attraction to nearest embryo
+    // sperm drift + draw — gentle steering with subtle, individualized pull toward an idle pointer
+    const idleMs = pointer.active ? (now - pointer.lastMove) : 0;
+
     for (const s of sperm) {
-      // periodically retarget heading
-      if (Math.random() < 0.005) s.angT = Math.random() * Math.PI * 2;
+      // personal interest ramps from 0 to attraction over ~2.5s past each sperm's own lag
+      const pull = pointer.active
+        ? Math.max(0, Math.min(1, (idleMs - s.attractionLag) / 2500)) * s.attraction
+        : 0;
+
+      // periodically retarget heading randomly — far less often when interested in the pointer
+      if (Math.random() < 0.005 * (1 - pull * 0.8)) {
+        s.angT = Math.random() * Math.PI * 2;
+      }
+
+      // when the pointer is idle, nudge angT toward it with a tangent offset (loose orbit, not a single point)
+      if (pull > 0.02) {
+        const dx = pointer.x - s.x;
+        const dy = pointer.y - s.y;
+        const dist = Math.hypot(dx, dy) || 1;
+        const angToPtr = Math.atan2(dy, dx);
+        // closer = more tangential, so they swirl past instead of piling up
+        const closeness = Math.max(0, 1 - dist / 240);
+        const wantedAng = angToPtr + s.orbitDir * s.orbitOffset * closeness;
+        let dT = wantedAng - s.angT;
+        while (dT > Math.PI) dT -= Math.PI * 2;
+        while (dT < -Math.PI) dT += Math.PI * 2;
+        // gentle re-aim of the target heading; speed of re-aim grows with interest
+        s.angT += dT * (0.012 + pull * 0.04);
+      }
+
       // turn toward target
       let da = s.angT - s.ang;
       while (da > Math.PI) da -= Math.PI * 2;
       while (da < -Math.PI) da += Math.PI * 2;
       s.ang += da * 0.01;
-      // motion includes wiggle
+      // motion includes wiggle, slight speed-up when actively converging
       const wob = Math.sin(now * 0.006 + s.phase) * 0.4;
-      s.x += Math.cos(s.ang + wob * 0.1) * s.v;
-      s.y += Math.sin(s.ang + wob * 0.1) * s.v;
+      const speed = s.v * (1 + pull * 0.25);
+      s.x += Math.cos(s.ang + wob * 0.1) * speed;
+      s.y += Math.sin(s.ang + wob * 0.1) * speed;
       // wrap
       if (s.x < -50) s.x = W + 50;
       if (s.x > W + 50) s.x = -50;
